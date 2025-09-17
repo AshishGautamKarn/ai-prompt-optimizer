@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Prompt Optimizer - Modern UI Demo</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles-modern.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2196f3">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="AI Prompt Optimizer">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    
+    <style>
+        .demo-hero {
+            text-align: center;
+            padding: var(--space-16) var(--space-4);
+            background: linear-gradient(135deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+            color: white;
+            margin-bottom: var(--space-8);
+        }
+        
+        .demo-hero h1 {
+            font-size: var(--text-4xl);
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .demo-hero p {
+            font-size: var(--text-xl);
+            opacity: 0.9;
+            margin-bottom: var(--space-8);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .demo-cta {
+            display: inline-flex;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .demo-cta .btn {
+            min-width: 200px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+            margin: var(--space-12) 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: var(--radius-2xl);
+            padding: var(--space-8);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--primary-500);
+            margin-bottom: var(--space-4);
+        }
+        
+        .feature-title {
+            font-size: var(--text-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-3);
+            color: var(--neutral-800);
+        }
+        
+        .feature-description {
+            color: var(--neutral-600);
+            line-height: 1.6;
+        }
+        
+        .comparison-section {
+            background: var(--neutral-50);
+            padding: var(--space-12) var(--space-4);
+            margin: var(--space-12) 0;
+            border-radius: var(--radius-2xl);
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-8);
+            margin-top: var(--space-8);
+        }
+        
+        .comparison-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .comparison-card h3 {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+            color: var(--neutral-800);
+        }
+        
+        .comparison-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .comparison-list li {
+            padding: var(--space-2) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .comparison-list li i {
+            color: var(--success-500);
+            width: 16px;
+        }
+        
+        .old-feature {
+            color: var(--neutral-500);
+        }
+        
+        .old-feature i {
+            color: var(--neutral-400);
+        }
+        
+        .new-feature {
+            color: var(--primary-700);
+            font-weight: 500;
+        }
+        
+        .new-feature i {
+            color: var(--primary-500);
+        }
+        
+        .device-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-6);
+            margin: var(--space-12) 0;
+        }
+        
+        .device-card {
+            background: white;
+            border-radius: var(--radius-2xl);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+        
+        .device-icon {
+            font-size: 4rem;
+            margin-bottom: var(--space-4);
+        }
+        
+        .device-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            color: var(--neutral-800);
+        }
+        
+        .device-description {
+            color: var(--neutral-600);
+            font-size: var(--text-sm);
+        }
+        
+        @media (max-width: 768px) {
+            .demo-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .demo-cta .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+    
+    <div class="container">
+        <div class="demo-hero">
+            <h1>
+                <i class="fas fa-robot" aria-hidden="true"></i> 
+                AI Prompt Optimizer
+            </h1>
+            <p>Now with a completely modern, responsive UI that works beautifully on all devices</p>
+            
+            <div class="demo-cta">
+                <a href="index-modern.html" class="btn btn-primary">
+                    <i class="fas fa-magic"></i>
+                    <span>Try Modern Version</span>
+                </a>
+                <a href="index.html" class="btn btn-outline">
+                    <i class="fas fa-eye"></i>
+                    <span>Compare with Original</span>
+                </a>
+            </div>
+        </div>
+
+        <main id="main-content">
+            <section class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Fully Responsive</h3>
+                    <p class="feature-description">
+                        Optimized for all devices - mobile phones, tablets, laptops, and desktops. 
+                        Touch-friendly interactions and adaptive layouts.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 class="feature-title">Material Design</h3>
+                    <p class="feature-description">
+                        Modern Material Design principles with beautiful colors, typography, 
+                        and smooth animations that feel native.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <h3 class="feature-title">Dark Mode</h3>
+                    <p class="feature-description">
+                        Elegant dark mode with smooth transitions. Automatically saves your preference 
+                        and provides a comfortable viewing experience.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-universal-access"></i>
+                    </div>
+                    <h3 class="feature-title">Accessible</h3>
+                    <p class="feature-description">
+                        Full keyboard navigation, screen reader support, and ARIA labels. 
+                        Meets WCAG 2.1 accessibility guidelines.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title">Fast & Smooth</h3>
+                    <p class="feature-description">
+                        Optimized performance with smooth animations, lazy loading, 
+                        and efficient rendering for the best user experience.
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="feature-title">Cross-Browser</h3>
+                    <p class="feature-description">
+                        Works perfectly on Chrome, Firefox, Safari, Edge, and mobile browsers. 
+                        Consistent experience across all platforms.
+                    </p>
+                </div>
+            </section>
+
+            <section class="comparison-section">
+                <h2 style="text-align: center; font-size: var(--text-3xl); margin-bottom: var(--space-4); color: var(--neutral-800);">
+                    <i class="fas fa-arrow-up" style="color: var(--success-500);"></i>
+                    What's New & Improved
+                </h2>
+                
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h3>🎨 Visual Design</h3>
+                        <ul class="comparison-list">
+                            <li class="old-feature">
+                                <i class="fas fa-times"></i>
+                                Basic gradient background
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Material Design color system
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Fluid typography scaling
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Consistent spacing system
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Modern shadows & elevation
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <h3>📱 Responsive Design</h3>
+                        <ul class="comparison-list">
+                            <li class="old-feature">
+                                <i class="fas fa-times"></i>
+                                Basic mobile support
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Mobile-first approach
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Touch-friendly interactions
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Adaptive grid layouts
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Optimized for all screen sizes
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <h3>♿ Accessibility</h3>
+                        <ul class="comparison-list">
+                            <li class="old-feature">
+                                <i class="fas fa-times"></i>
+                                Basic accessibility
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Full keyboard navigation
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Screen reader support
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                ARIA labels & roles
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                High contrast support
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-card">
+                        <h3>⚡ Performance</h3>
+                        <ul class="comparison-list">
+                            <li class="old-feature">
+                                <i class="fas fa-times"></i>
+                                Basic animations
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Smooth micro-interactions
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Reduced motion support
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Optimized rendering
+                            </li>
+                            <li class="new-feature">
+                                <i class="fas fa-check"></i>
+                                Toast notifications
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="device-showcase">
+                <div class="device-card">
+                    <div class="device-icon" style="color: var(--primary-500);">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="device-title">Mobile</h3>
+                    <p class="device-description">iOS Safari, Chrome Mobile, Samsung Internet</p>
+                </div>
+                
+                <div class="device-card">
+                    <div class="device-icon" style="color: var(--secondary-500);">
+                        <i class="fas fa-tablet-alt"></i>
+                    </div>
+                    <h3 class="device-title">Tablet</h3>
+                    <p class="device-description">iPad, Android tablets, Surface devices</p>
+                </div>
+                
+                <div class="device-card">
+                    <div class="device-icon" style="color: var(--success-500);">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3 class="device-title">Desktop</h3>
+                    <p class="device-description">Windows, macOS, Linux browsers</p>
+                </div>
+                
+                <div class="device-card">
+                    <div class="device-icon" style="color: var(--warning-500);">
+                        <i class="fas fa-tv"></i>
+                    </div>
+                    <h3 class="device-title">Large Screens</h3>
+                    <p class="device-description">4K monitors, ultrawide displays</p>
+                </div>
+            </section>
+
+            <section style="text-align: center; margin: var(--space-16) 0;">
+                <h2 style="font-size: var(--text-3xl); margin-bottom: var(--space-6); color: var(--neutral-800);">
+                    Ready to Experience the Future?
+                </h2>
+                <p style="font-size: var(--text-lg); color: var(--neutral-600); margin-bottom: var(--space-8); max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Try the modern version and see how much better the user experience can be. 
+                    All the same powerful features, now with a beautiful, responsive interface.
+                </p>
+                <div class="demo-cta">
+                    <a href="index-modern.html" class="btn btn-primary" style="font-size: var(--text-lg); padding: var(--space-4) var(--space-8);">
+                        <i class="fas fa-rocket"></i>
+                        <span>Launch Modern Version</span>
+                    </a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <p>Created and Managed by: <strong>Ashish Gautam</strong></p>
+            <p>
+                LinkedIn: 
+                <a 
+                    href="https://www.linkedin.com/in/ashishgautamkarn/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    aria-label="Visit Ashish Gautam's LinkedIn profile"
+                >
+                    @ashishgautamkarn
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Toast notifications container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite" aria-label="Notifications"></div>
+
+    <script>
+        // Simple theme toggle for demo page
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+            let theme = localStorage.getItem('theme') || 'light';
+            
+            document.documentElement.setAttribute('data-theme', theme);
+            themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            
+            themeToggle.addEventListener('click', () => {
+                theme = theme === 'light' ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            });
+        });
+    </script>
+</body>
+</html>
