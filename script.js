@@ -453,9 +453,20 @@ class AIPromptOptimizer {
     }
 
     updateProgress() {
-        const progress = ((this.currentStep + 1) / this.questions.length) * 100;
-        document.getElementById('progressFill').style.width = `${progress}%`;
-        document.getElementById('progressText').textContent = `Step ${this.currentStep + 1} of ${this.questions.length}`;
+        // Calculate progress based on current step and total questions
+        const totalQuestions = this.questions.length;
+        const currentStepNumber = this.currentStep + 1;
+        const progress = (currentStepNumber / totalQuestions) * 100;
+        
+        console.log(`updateProgress called: currentStep=${this.currentStep}, totalQuestions=${totalQuestions}, currentStepNumber=${currentStepNumber}`);
+        
+        // Update progress bar
+        document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
+        
+        // Update progress text
+        document.getElementById('progressText').textContent = `Step ${currentStepNumber} of ${totalQuestions}`;
+        
+        console.log(`Progress updated: Step ${currentStepNumber} of ${totalQuestions} (${progress.toFixed(1)}%)`);
     }
 
     updateNavigation() {

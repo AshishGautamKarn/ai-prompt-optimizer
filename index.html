@@ -5,26 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Prompt Optimizer</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <header>
+        <header class="header">
             <h1><i class="fas fa-robot"></i> AI Prompt Optimizer</h1>
-            <p>Generate optimized prompts for various AI platforms</p>
+            <p>Generate the perfect prompt for your chosen AI platform</p>
         </header>
 
         <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-            <div class="progress-text" id="progressText">Step 1 of 5</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">Step 1 of 5</span>
         </div>
 
         <div class="question-container" id="questionContainer">
             <!-- Questions will be dynamically loaded here -->
         </div>
 
-        <div class="navigation" id="navigation">
-            <button id="prevBtn" class="btn btn-outline">
+        <div class="navigation">
+            <button id="prevBtn" class="btn btn-secondary" style="display: none;">
                 <i class="fas fa-arrow-left"></i> Previous
             </button>
             <button id="nextBtn" class="btn btn-primary">
@@ -54,13 +57,13 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-
     <footer class="footer">
         <div class="footer-content">
             <p>Created and Managed by: <strong>Ashish Gautam</strong></p>
             <p>LinkedIn: <a href="https://www.linkedin.com/in/ashishgautamkarn/" target="_blank" rel="noopener noreferrer">@ashishgautamkarn</a></p>
         </div>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>

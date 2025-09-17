@@ -65,7 +65,7 @@ body {
     background: linear-gradient(90deg, #667eea, #764ba2);
     border-radius: 4px;
     transition: width 0.3s ease;
-    width: 16.67%; /* 1/6 steps */
+    width: 20%; /* 1/5 steps */
 }
 
 .progress-text {
