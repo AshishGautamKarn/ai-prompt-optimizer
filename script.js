@@ -1,11 +1,15 @@
-// AI Prompt Optimizer - Main JavaScript File
+// AI Prompt Optimizer - Modern JavaScript with Enhanced UI/UX
+// Enhanced with accessibility, animations, and modern features
 
-class AIPromptOptimizer {
+class AIPromptOptimizerModern {
     constructor() {
         this.currentStep = 0;
         this.answers = {};
         this.aiPlatforms = this.initializeAIPlatforms();
         this.questions = this.initializeQuestions();
+        this.theme = localStorage.getItem('theme') || 'light';
+        this.animationsEnabled = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
         this.init();
     }
 
@@ -268,23 +272,44 @@ class AIPromptOptimizer {
     }
 
     init() {
-        console.log(`Total questions: ${this.questions.length}`);
-        console.log('Question IDs:', this.questions.map(q => q.id));
-        this.renderQuestion();
+        this.setupTheme();
         this.setupEventListeners();
+        this.renderQuestion();
         this.updateProgress();
+        this.setupAccessibility();
+        this.setupAnimations();
+        
+        // Show loading indicator briefly for smooth experience
+        this.showLoading();
+        setTimeout(() => {
+            this.hideLoading();
+        }, 500);
+    }
+
+    setupTheme() {
+        document.documentElement.setAttribute('data-theme', this.theme);
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+            themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
     }
 
     setupEventListeners() {
+        // Navigation buttons
         document.getElementById('nextBtn').addEventListener('click', () => this.nextStep());
         document.getElementById('prevBtn').addEventListener('click', () => this.prevStep());
         document.getElementById('generateBtn').addEventListener('click', () => this.generatePrompt());
         document.getElementById('copyBtn').addEventListener('click', () => this.copyPrompt());
         
-        // Use event delegation for the Start New Prompt button since it might be dynamically shown/hidden
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
+        
+        // Start new prompt button with event delegation
         document.addEventListener('click', (event) => {
             if (event.target && event.target.id === 'newPromptBtn') {
-                console.log('Start New Prompt button clicked (via event delegation)');
                 event.preventDefault();
                 event.stopPropagation();
                 this.startNewPrompt();
@@ -304,11 +329,141 @@ class AIPromptOptimizer {
         } else {
             console.log('Start New Prompt button not found initially (will use event delegation)');
         }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', (event) => {
+            this.handleKeyboardNavigation(event);
+        });
+        
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            this.handleResize();
+        });
+    }
+
+    setupAccessibility() {
+        // Add ARIA labels and roles
+        const progressBar = document.querySelector('.progress-container');
+        if (progressBar) {
+            progressBar.setAttribute('role', 'progressbar');
+            progressBar.setAttribute('aria-valuenow', this.currentStep + 1);
+            progressBar.setAttribute('aria-valuemin', '1');
+            progressBar.setAttribute('aria-valuemax', this.questions.length);
+        }
+    }
+
+    setupAnimations() {
+        if (!this.animationsEnabled) {
+            document.documentElement.style.setProperty('--transition-fast', '0ms');
+            document.documentElement.style.setProperty('--transition-normal', '0ms');
+            document.documentElement.style.setProperty('--transition-slow', '0ms');
+        }
+    }
+
+    handleKeyboardNavigation(event) {
+        // Escape key to go back
+        if (event.key === 'Escape' && this.currentStep > 0) {
+            this.prevStep();
+        }
+        
+        // Enter key to go forward (if not in textarea)
+        if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
+            event.preventDefault();
+            if (this.currentStep < this.questions.length - 1) {
+                this.nextStep();
+            } else {
+                this.generatePrompt();
+            }
+        }
+        
+        // Arrow keys for radio buttons
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            const radioButtons = document.querySelectorAll('input[type="radio"]:not(:disabled)');
+            if (radioButtons.length > 0) {
+                event.preventDefault();
+                const currentIndex = Array.from(radioButtons).indexOf(document.activeElement);
+                let nextIndex;
+                
+                if (event.key === 'ArrowDown') {
+                    nextIndex = (currentIndex + 1) % radioButtons.length;
+                } else {
+                    nextIndex = (currentIndex - 1 + radioButtons.length) % radioButtons.length;
+                }
+                
+                radioButtons[nextIndex].focus();
+                radioButtons[nextIndex].click();
+            }
+        }
+    }
+
+    handleResize() {
+        // Handle responsive adjustments
+        const container = document.querySelector('.container');
+        if (container) {
+            // Add any responsive adjustments here
+        }
+    }
+
+    showLoading() {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'flex';
+        }
+    }
+
+    hideLoading() {
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
+    }
+
+    showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) return;
+        
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'polite');
+        
+        toastContainer.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.classList.add('toast-show');
+        }, 100);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('toast-show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    toggleTheme() {
+        this.theme = this.theme === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', this.theme);
+        localStorage.setItem('theme', this.theme);
+        
+        const themeIcon = document.getElementById('themeIcon');
+        if (themeIcon) {
+            themeIcon.className = this.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        
+        this.showToast(`Switched to ${this.theme} mode`, 'success');
     }
 
     renderQuestion() {
         const container = document.getElementById('questionContainer');
         const question = this.questions[this.currentStep];
+        
+        if (!question) return;
         
         container.innerHTML = `
             <div class="question-title">${question.title}</div>
@@ -319,16 +474,23 @@ class AIPromptOptimizer {
         `;
 
         this.setupQuestionEventListeners(question);
+        this.animateQuestionIn();
     }
 
     renderQuestionInput(question) {
         switch (question.type) {
             case 'radio':
                 return `
-                    <div class="radio-group">
-                        ${question.options.map(option => `
-                            <div class="radio-item" data-value="${option.value}">
-                                <input type="radio" name="${question.id}" value="${option.value}" id="${question.id}_${option.value}">
+                    <div class="radio-group" role="radiogroup" aria-labelledby="question-title">
+                        ${question.options.map((option, index) => `
+                            <div class="radio-item" data-value="${option.value}" tabindex="0">
+                                <input 
+                                    type="radio" 
+                                    name="${question.id}" 
+                                    value="${option.value}" 
+                                    id="${question.id}_${option.value}"
+                                    ${this.answers[question.id] === option.value ? 'checked' : ''}
+                                >
                                 <label for="${question.id}_${option.value}">
                                     <strong>${option.label}</strong>
                                     <br><small>${option.description}</small>
@@ -339,10 +501,16 @@ class AIPromptOptimizer {
                 `;
             case 'checkbox':
                 return `
-                    <div class="checkbox-group">
+                    <div class="checkbox-group" role="group" aria-labelledby="question-title">
                         ${question.options.map(option => `
-                            <div class="checkbox-item" data-value="${option.value}">
-                                <input type="checkbox" name="${question.id}" value="${option.value}" id="${question.id}_${option.value}">
+                            <div class="checkbox-item" data-value="${option.value}" tabindex="0">
+                                <input 
+                                    type="checkbox" 
+                                    name="${question.id}" 
+                                    value="${option.value}" 
+                                    id="${question.id}_${option.value}"
+                                    ${(this.answers[question.id] || []).includes(option.value) ? 'checked' : ''}
+                                >
                                 <label for="${question.id}_${option.value}">
                                     <strong>${option.label}</strong>
                                     <br><small>${option.description}</small>
@@ -357,6 +525,7 @@ class AIPromptOptimizer {
                         id="${question.id}" 
                         placeholder="${question.placeholder || ''}"
                         rows="4"
+                        aria-describedby="question-description"
                     >${this.answers[question.id] || ''}</textarea>
                 `;
             default:
@@ -370,18 +539,80 @@ class AIPromptOptimizer {
                 input.addEventListener('change', (e) => {
                     this.answers[question.id] = e.target.value;
                     this.updateRadioSelection(question.id, e.target.value);
+                    this.animateSelection(e.target);
+                });
+            });
+            
+            // Add click handlers for the container divs
+            document.querySelectorAll(`[data-value]`).forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+                        const input = item.querySelector('input');
+                        if (input) {
+                            input.checked = true;
+                            input.dispatchEvent(new Event('change'));
+                        }
+                    }
+                });
+                
+                item.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        const input = item.querySelector('input');
+                        if (input) {
+                            input.checked = true;
+                            input.dispatchEvent(new Event('change'));
+                        }
+                    }
                 });
             });
         } else if (question.type === 'checkbox') {
             document.querySelectorAll(`input[name="${question.id}"]`).forEach(input => {
                 input.addEventListener('change', (e) => {
                     this.updateCheckboxAnswers(question.id, e.target.value, e.target.checked);
+                    this.animateSelection(e.target);
+                });
+            });
+            
+            // Add click handlers for the container divs
+            document.querySelectorAll(`[data-value]`).forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'LABEL') {
+                        const input = item.querySelector('input');
+                        if (input) {
+                            input.checked = !input.checked;
+                            input.dispatchEvent(new Event('change'));
+                        }
+                    }
                 });
             });
         } else if (question.type === 'textarea') {
             document.getElementById(question.id).addEventListener('input', (e) => {
                 this.answers[question.id] = e.target.value;
             });
+        }
+    }
+
+    animateQuestionIn() {
+        const container = document.getElementById('questionContainer');
+        if (container && this.animationsEnabled) {
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            requestAnimationFrame(() => {
+                container.style.transition = 'all 0.6s ease-out';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            });
+        }
+    }
+
+    animateSelection(element) {
+        if (this.animationsEnabled) {
+            element.closest('.radio-item, .checkbox-item').style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                element.closest('.radio-item, .checkbox-item').style.transform = 'scale(1)';
+            }, 150);
         }
     }
 
@@ -409,38 +640,22 @@ class AIPromptOptimizer {
     }
 
     nextStep() {
-        console.log('nextStep called, current step:', this.currentStep);
-        console.log('Current question ID:', this.questions[this.currentStep].id);
-        console.log('Total questions:', this.questions.length);
-        console.log('All question IDs:', this.questions.map((q, i) => `${i}: ${q.id}`));
-        
         if (this.validateCurrentStep()) {
-            // Check if we need to add dynamic context questions AFTER leaving context_details step
             if (this.questions[this.currentStep].id === 'context_details') {
-                console.log('Leaving context_details step, adding dynamic questions...');
-                console.log('Selected contexts before adding:', this.answers.context_details);
                 this.currentStep++;
                 this.addDynamicContextQuestions();
-                console.log(`Added dynamic questions. Total questions now: ${this.questions.length}`);
                 return;
             }
             
             this.currentStep++;
-            console.log(`Moving to step ${this.currentStep + 1} of ${this.questions.length}`);
-            console.log(`Next question will be: ${this.questions[this.currentStep]?.id || 'none'}`);
-            console.log(`Current step index: ${this.currentStep}, Question at this index: ${this.questions[this.currentStep]?.id || 'none'}`);
             
             if (this.currentStep < this.questions.length) {
                 this.renderQuestion();
                 this.updateProgress();
                 this.updateNavigation();
             } else {
-                // We've completed all questions, show generate button
-                console.log('All questions completed, showing generate button');
                 this.showGenerateButton();
             }
-        } else {
-            console.log('Validation failed');
         }
     }
 
@@ -448,10 +663,8 @@ class AIPromptOptimizer {
         if (this.currentStep > 0) {
             this.currentStep--;
             
-            // If we're going back to the context_details question, we need to rebuild the dynamic questions
             if (this.questions[this.currentStep].id === 'context_details') {
                 this.rebuildDynamicContextQuestions();
-                console.log(`Rebuilt dynamic questions. Total questions now: ${this.questions.length}`);
             }
             
             this.renderQuestion();
@@ -464,11 +677,10 @@ class AIPromptOptimizer {
         const question = this.questions[this.currentStep];
         const answer = this.answers[question.id];
         
-        // Check if answer exists and is not empty
         if (!answer || 
             (Array.isArray(answer) && answer.length === 0) ||
             (typeof answer === 'string' && answer.trim() === '')) {
-            alert(`Please answer the question: ${question.title}`);
+            this.showToast(`Please answer the question: ${question.title}`, 'error');
             return false;
         }
         
@@ -476,20 +688,18 @@ class AIPromptOptimizer {
     }
 
     updateProgress() {
-        // Calculate progress based on current step and total questions
         const totalQuestions = this.questions.length;
         const currentStepNumber = this.currentStep + 1;
         const progress = (currentStepNumber / totalQuestions) * 100;
         
-        console.log(`updateProgress called: currentStep=${this.currentStep}, totalQuestions=${totalQuestions}, currentStepNumber=${currentStepNumber}`);
-        
-        // Update progress bar
         document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
-        
-        // Update progress text
         document.getElementById('progressText').textContent = `Step ${currentStepNumber} of ${totalQuestions}`;
         
-        console.log(`Progress updated: Step ${currentStepNumber} of ${totalQuestions} (${progress.toFixed(1)}%)`);
+        // Update ARIA attributes
+        const progressBar = document.querySelector('.progress-container');
+        if (progressBar) {
+            progressBar.setAttribute('aria-valuenow', currentStepNumber);
+        }
     }
 
     updateNavigation() {
@@ -497,22 +707,18 @@ class AIPromptOptimizer {
         const nextBtn = document.getElementById('nextBtn');
         const generateBtn = document.getElementById('generateBtn');
         
-        // Show/hide previous button
         prevBtn.style.display = this.currentStep > 0 ? 'flex' : 'none';
         
-        // Show/hide next button - show if we're not on the last step OR if we're on context_details step
         if (this.currentStep < this.questions.length - 1 || this.questions[this.currentStep].id === 'context_details') {
             nextBtn.style.display = 'flex';
             generateBtn.style.display = 'none';
         } else {
-            // We're on the last step, show generate button instead
             nextBtn.style.display = 'none';
             generateBtn.style.display = 'flex';
         }
     }
 
     showGenerateButton() {
-        // Hide the question container and show generate button
         document.getElementById('questionContainer').innerHTML = `
             <div class="question-title">Ready to Generate Your Prompt!</div>
             <div class="question-description">
@@ -525,29 +731,38 @@ class AIPromptOptimizer {
     }
 
     generatePrompt() {
-        const aiPlatform = this.answers.ai_platform;
-        const aiInfo = this.aiPlatforms[aiPlatform];
+        this.showLoading();
         
-        const prompt = this.buildOptimizedPrompt(aiPlatform, aiInfo);
-        
-        document.getElementById('generatedPrompt').value = prompt;
-        document.getElementById('resultContainer').style.display = 'block';
-        
-        // Safely hide question container and navigation if they exist
-        const questionContainer = document.getElementById('questionContainer');
-        const navigation = document.getElementById('navigation');
-        
-        if (questionContainer) {
-            questionContainer.style.display = 'none';
-        }
-        if (navigation) {
-            navigation.style.display = 'none';
-        }
-        
-        this.showAITips(aiInfo);
-        
-        // Scroll to result
-        document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+            const aiPlatform = this.answers.ai_platform;
+            const aiInfo = this.aiPlatforms[aiPlatform];
+            
+            const prompt = this.buildOptimizedPrompt(aiPlatform, aiInfo);
+            
+            document.getElementById('generatedPrompt').value = prompt;
+            document.getElementById('resultContainer').style.display = 'block';
+            
+            const questionContainer = document.getElementById('questionContainer');
+            const navigation = document.getElementById('navigation');
+            
+            if (questionContainer) {
+                questionContainer.style.display = 'none';
+            }
+            if (navigation) {
+                navigation.style.display = 'none';
+            }
+            
+            this.showAITips(aiInfo);
+            this.hideLoading();
+            
+            // Scroll to result with smooth animation
+            document.getElementById('resultContainer').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+            
+            this.showToast('Prompt generated successfully!', 'success');
+        }, 1000);
     }
 
     buildOptimizedPrompt(aiPlatform, aiInfo) {
@@ -558,22 +773,11 @@ class AIPromptOptimizer {
         
         let prompt = '';
         
-        // Role definition based on AI platform
         prompt += this.getRoleDefinition(aiPlatform, taskType, complexity);
-        
-        // Task description
         prompt += this.getTaskDescription(taskType, complexity);
-        
-        // Context and constraints (now handles dynamic context)
         prompt += this.getContextSection([], extraPreferences);
-        
-        // Output format requirements
         prompt += this.getOutputFormatSection(outputFormats);
-        
-        // AI-specific optimizations
         prompt += this.getAISpecificOptimizations(aiPlatform, aiInfo);
-        
-        // Closing instructions
         prompt += this.getClosingInstructions(aiPlatform);
         
         return prompt.trim();
@@ -617,7 +821,6 @@ class AIPromptOptimizer {
     getContextSection(contextDetails, extraPreferences) {
         let context = '';
         
-        // Handle experience level
         if (this.answers.context_experience_level) {
             const experienceLevel = this.answers.context_experience_level;
             const experienceMap = {
@@ -629,17 +832,14 @@ class AIPromptOptimizer {
             context += `Please ${experienceMap[experienceLevel] || experienceMap['intermediate']}. `;
         }
         
-        // Handle project context
         if (this.answers.context_project_context) {
             context += `Project context: ${this.answers.context_project_context}. `;
         }
         
-        // Handle constraints
         if (this.answers.context_constraints) {
             context += `Constraints and limitations: ${this.answers.context_constraints}. `;
         }
         
-        // Handle preferences
         if (this.answers.context_preferences && this.answers.context_preferences.length > 0) {
             const preferences = this.answers.context_preferences;
             let preferenceText = 'Please adapt your response style as follows: ';
@@ -666,17 +866,14 @@ class AIPromptOptimizer {
             context += preferenceText;
         }
         
-        // Handle target audience
         if (this.answers.context_target_audience) {
             context += `Target audience: ${this.answers.context_target_audience}. `;
         }
         
-        // Handle success criteria
         if (this.answers.context_success_criteria) {
             context += `Success criteria: ${this.answers.context_success_criteria}. `;
         }
         
-        // Handle extra preferences
         if (extraPreferences) {
             context += `Additional preferences and requirements: ${extraPreferences}. `;
         }
@@ -762,11 +959,9 @@ class AIPromptOptimizer {
         const promptText = document.getElementById('generatedPrompt').value;
         
         try {
-            // Try modern Clipboard API first
             if (navigator.clipboard && window.isSecureContext) {
                 await navigator.clipboard.writeText(promptText);
             } else {
-                // Fallback for older browsers
                 const textArea = document.createElement('textarea');
                 textArea.value = promptText;
                 textArea.style.position = 'fixed';
@@ -779,11 +974,10 @@ class AIPromptOptimizer {
                 document.body.removeChild(textArea);
             }
             
-            // Show success feedback
             const copyBtn = document.getElementById('copyBtn');
             const originalText = copyBtn.innerHTML;
-            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-            copyBtn.style.background = '#28a745';
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> <span>Copied!</span>';
+            copyBtn.style.background = 'var(--success-500)';
             copyBtn.style.color = 'white';
             
             setTimeout(() => {
@@ -791,9 +985,11 @@ class AIPromptOptimizer {
                 copyBtn.style.background = '';
                 copyBtn.style.color = '';
             }, 2000);
+            
+            this.showToast('Prompt copied to clipboard!', 'success');
         } catch (err) {
             console.error('Copy failed:', err);
-            alert('Unable to copy. Please select and copy manually.');
+            this.showToast('Unable to copy. Please select and copy manually.', 'error');
         }
     }
 
@@ -801,25 +997,17 @@ class AIPromptOptimizer {
         const selectedContexts = this.answers.context_details || [];
         const contextQuestions = this.getContextQuestionTemplates();
         
-        console.log('addDynamicContextQuestions called');
-        console.log('Selected contexts:', selectedContexts);
-        console.log('Available context question templates:', Object.keys(contextQuestions));
-        
-        // Find the index where we need to insert the dynamic questions
         const contextIndex = this.questions.findIndex(q => q.id === 'context_details');
         const insertIndex = contextIndex + 1;
         
-        // Remove any existing dynamic context questions and extra_preferences
         this.questions = this.questions.filter(q => !q.id.startsWith('context_') && q.id !== 'extra_preferences');
         
-        // Add dynamic questions for selected contexts
         selectedContexts.forEach(contextType => {
             if (contextQuestions[contextType]) {
                 this.questions.splice(insertIndex, 0, contextQuestions[contextType]);
             }
         });
         
-        // Always add the extra preferences question
         this.questions.push({
             id: 'extra_preferences',
             title: 'Any extra preferences or requirements?',
@@ -828,11 +1016,6 @@ class AIPromptOptimizer {
             placeholder: 'e.g., Must use Python 3.8+, Should follow company coding standards, Need to be completed by Friday, Must be accessible to beginners, Prefer concise responses, etc.'
         });
         
-        console.log(`Added ${selectedContexts.length} dynamic context questions + extra preferences`);
-        console.log('Total questions now:', this.questions.length);
-        console.log('Questions:', this.questions.map(q => q.id));
-        
-        // Render the next question (currentStep was already incremented in nextStep)
         this.renderQuestion();
         this.updateProgress();
         this.updateNavigation();
@@ -842,21 +1025,17 @@ class AIPromptOptimizer {
         const selectedContexts = this.answers.context_details || [];
         const contextQuestions = this.getContextQuestionTemplates();
         
-        // Find the index where we need to insert the dynamic questions
         const contextIndex = this.questions.findIndex(q => q.id === 'context_details');
         const insertIndex = contextIndex + 1;
         
-        // Remove any existing dynamic context questions and extra_preferences
         this.questions = this.questions.filter(q => !q.id.startsWith('context_') && q.id !== 'extra_preferences');
         
-        // Add dynamic questions for selected contexts
         selectedContexts.forEach(contextType => {
             if (contextQuestions[contextType]) {
                 this.questions.splice(insertIndex, 0, contextQuestions[contextType]);
             }
         });
         
-        // Add the extra preferences question
         this.questions.push({
             id: 'extra_preferences',
             title: 'Any extra preferences or requirements?',
@@ -864,8 +1043,6 @@ class AIPromptOptimizer {
             type: 'textarea',
             placeholder: 'e.g., Must use Python 3.8+, Should follow company coding standards, Need to be completed by Friday, Must be accessible to beginners, Prefer concise responses, etc.'
         });
-        
-        console.log(`Rebuilt ${selectedContexts.length} dynamic context questions + extra preferences`);
     }
 
     getContextQuestionTemplates() {
@@ -929,56 +1106,102 @@ class AIPromptOptimizer {
 
     startNewPrompt() {
         console.log('startNewPrompt() called');
+        this.showLoading();
         
-        // Reset application state
-        this.currentStep = 0;
-        this.answers = {};
-        
-        console.log('Reset currentStep to:', this.currentStep);
-        console.log('Reset answers to:', this.answers);
-        
-        // Reset questions to initial state (remove any dynamic questions)
-        this.questions = this.initializeQuestions();
-        
-        console.log('Reset questions to initial state, total questions:', this.questions.length);
-        
-        // Hide result container and show question container
-        const resultContainer = document.getElementById('resultContainer');
-        const questionContainer = document.getElementById('questionContainer');
-        const navigation = document.getElementById('navigation');
-        
-        if (resultContainer) {
-            resultContainer.style.display = 'none';
-            console.log('Hidden result container');
-        }
-        
-        if (questionContainer) {
-            questionContainer.style.display = 'block';
-            console.log('Showed question container');
-        }
-        
-        if (navigation) {
-            navigation.style.display = 'flex';
-            console.log('Showed navigation');
-        }
-        
-        // Reset progress
-        this.updateProgress();
-        this.updateNavigation();
-        
-        // Render first question
-        this.renderQuestion();
-        
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        console.log('New prompt started - reset to step 1');
-        console.log('Current step after reset:', this.currentStep);
-        console.log('Total questions after reset:', this.questions.length);
+        setTimeout(() => {
+            this.currentStep = 0;
+            this.answers = {};
+            this.questions = this.initializeQuestions();
+            
+            console.log('Reset currentStep to:', this.currentStep);
+            console.log('Reset answers to:', this.answers);
+            console.log('Reset questions to initial state, total questions:', this.questions.length);
+            
+            const resultContainer = document.getElementById('resultContainer');
+            const questionContainer = document.getElementById('questionContainer');
+            const navigation = document.getElementById('navigation');
+            
+            if (resultContainer) {
+                resultContainer.style.display = 'none';
+            }
+            
+            if (questionContainer) {
+                questionContainer.style.display = 'block';
+            }
+            
+            if (navigation) {
+                navigation.style.display = 'flex';
+            }
+            
+            this.updateProgress();
+            this.updateNavigation();
+            this.renderQuestion();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            this.hideLoading();
+            
+            this.showToast('Started new prompt generation', 'success');
+        }, 500);
     }
 }
 
 // Initialize the application when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    window.app = new AIPromptOptimizer();
+    window.app = new AIPromptOptimizerModern();
 });
+
+// Add CSS for toast notifications
+const toastStyles = `
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1080;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+    max-width: 300px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.toast-show {
+    transform: translateX(0);
+}
+
+.toast-success {
+    border-left: 4px solid #4caf50;
+    color: #2e7d32;
+}
+
+.toast-error {
+    border-left: 4px solid #f44336;
+    color: #c62828;
+}
+
+.toast-info {
+    border-left: 4px solid #2196f3;
+    color: #1565c0;
+}
+
+[data-theme="dark"] .toast {
+    background: #2d2d2d;
+    border-color: #424242;
+    color: #ffffff;
+}
+`;
+
+// Inject toast styles
+const styleSheet = document.createElement('style');
+styleSheet.textContent = toastStyles;
+document.head.appendChild(styleSheet);
