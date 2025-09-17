@@ -280,7 +280,30 @@ class AIPromptOptimizer {
         document.getElementById('prevBtn').addEventListener('click', () => this.prevStep());
         document.getElementById('generateBtn').addEventListener('click', () => this.generatePrompt());
         document.getElementById('copyBtn').addEventListener('click', () => this.copyPrompt());
-        document.getElementById('newPromptBtn').addEventListener('click', () => this.startNewPrompt());
+        
+        // Use event delegation for the Start New Prompt button since it might be dynamically shown/hidden
+        document.addEventListener('click', (event) => {
+            if (event.target && event.target.id === 'newPromptBtn') {
+                console.log('Start New Prompt button clicked (via event delegation)');
+                event.preventDefault();
+                event.stopPropagation();
+                this.startNewPrompt();
+            }
+        });
+        
+        // Also try direct attachment if button exists
+        const newPromptBtn = document.getElementById('newPromptBtn');
+        if (newPromptBtn) {
+            newPromptBtn.addEventListener('click', (event) => {
+                console.log('Start New Prompt button clicked (direct listener)');
+                event.preventDefault();
+                event.stopPropagation();
+                this.startNewPrompt();
+            });
+            console.log('Start New Prompt button event listener attached (direct)');
+        } else {
+            console.log('Start New Prompt button not found initially (will use event delegation)');
+        }
     }
 
     renderQuestion() {
@@ -905,17 +928,39 @@ class AIPromptOptimizer {
     }
 
     startNewPrompt() {
+        console.log('startNewPrompt() called');
+        
         // Reset application state
         this.currentStep = 0;
         this.answers = {};
         
+        console.log('Reset currentStep to:', this.currentStep);
+        console.log('Reset answers to:', this.answers);
+        
         // Reset questions to initial state (remove any dynamic questions)
         this.questions = this.initializeQuestions();
         
+        console.log('Reset questions to initial state, total questions:', this.questions.length);
+        
         // Hide result container and show question container
-        document.getElementById('resultContainer').style.display = 'none';
-        document.getElementById('questionContainer').style.display = 'block';
-        document.getElementById('navigation').style.display = 'flex';
+        const resultContainer = document.getElementById('resultContainer');
+        const questionContainer = document.getElementById('questionContainer');
+        const navigation = document.getElementById('navigation');
+        
+        if (resultContainer) {
+            resultContainer.style.display = 'none';
+            console.log('Hidden result container');
+        }
+        
+        if (questionContainer) {
+            questionContainer.style.display = 'block';
+            console.log('Showed question container');
+        }
+        
+        if (navigation) {
+            navigation.style.display = 'flex';
+            console.log('Showed navigation');
+        }
         
         // Reset progress
         this.updateProgress();
@@ -928,6 +973,8 @@ class AIPromptOptimizer {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         
         console.log('New prompt started - reset to step 1');
+        console.log('Current step after reset:', this.currentStep);
+        console.log('Total questions after reset:', this.questions.length);
     }
 }
 
