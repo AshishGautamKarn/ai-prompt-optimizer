@@ -2,6 +2,8 @@
 
 A comprehensive web application that helps developers and ServiceNow users generate the best possible prompts for various AI platforms. The tool guides users through a series of questions to create optimized prompts tailored to their specific AI platform and use case.
 
+Link: https://ashishgautamkarn.github.io/ai-prompt-optimizer/
+
 ## Features
 
 - **Multi-Platform Support**: Optimized for 9+ top AI platforms including ChatGPT, Claude, Gemini, GitHub Copilot, Cursor, Perplexity, Bard, and ServiceNow AI
